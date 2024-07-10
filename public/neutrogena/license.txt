@@ -1,0 +1,11 @@
+Model Information:
+* title:	Hand Creme Tube
+* source:	https://sketchfab.com/3d-models/hand-creme-tube-24c087147db64ddf87d326cfab31b3e9
+* author:	endbored (https://sketchfab.com/endbored)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Hand Creme Tube" (https://sketchfab.com/3d-models/hand-creme-tube-24c087147db64ddf87d326cfab31b3e9) by endbored (https://sketchfab.com/endbored) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
