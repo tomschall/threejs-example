@@ -1,71 +1,61 @@
-import { useRef, useState } from 'react';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { useRef, useEffect } from 'react';
+import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Suspense } from 'react';
-
-interface BoxProps {
-  position: [number, number, number];
-}
-
-const Pepsi = () => {
-  const gltf = useLoader(GLTFLoader, '/pepsi/scene.gltf');
-  return (
-    <>
-      <primitive object={gltf.scene} scale={20} position={[3, 0, 0]} />
-    </>
-  );
-};
+import * as THREE from 'three';
+import { DecalGeometry } from 'three-stdlib';
 
 const Neutrogena = () => {
+  const groupRef = useRef<THREE.Group>(null);
+  const decalMesh = useRef<THREE.Mesh>(null);
   const gltf = useLoader(GLTFLoader, '/neutrogena/scene.gltf');
+  const decalTexture = useLoader(
+    THREE.TextureLoader,
+    '/decal/png-2702691_640.png'
+  ); // Update with your decal path
+
+  useEffect(() => {
+    if (groupRef.current && decalTexture) {
+      // Find the mesh within the GLTF scene
+      const mesh = groupRef.current.getObjectByProperty(
+        'type',
+        'Mesh'
+      ) as THREE.Mesh;
+      if (mesh) {
+        const position = new THREE.Vector3(1, 1, 1); // Adjust the position to where you want the decal
+        const rotation = new THREE.Euler(0, 0, 0); // No rotation needed
+        const scale = new THREE.Vector3(20, 20, 20); // Adjust the scale if needed
+
+        const decalGeometry = new DecalGeometry(
+          mesh,
+          position,
+          rotation,
+          scale
+        );
+        if (decalMesh.current) {
+          decalMesh.current.geometry = decalGeometry;
+        }
+      }
+    }
+  }, [gltf, decalTexture]);
+
   return (
-    <>
-      <primitive object={gltf.scene} scale={1} position={[-3, 0, 0]} />
-    </>
+    <group ref={groupRef} position={[0, 0, 0]}>
+      <primitive object={gltf.scene} rotation={[0, 0, 0]} scale={1} />
+      {/* No rotation applied */}
+      <mesh ref={decalMesh} rotation={[Math.PI / 2, Math.PI, Math.PI]}>
+        <meshStandardMaterial map={decalTexture} transparent />
+      </mesh>
+    </group>
   );
 };
-
-function Box(props: BoxProps) {
-  // This reference gives us direct access to the THREE.Mesh object
-  const ref = useRef(null as any);
-  // Hold state for hovered and clicked events
-  const [hovered, hover] = useState(false);
-  const [clicked, click] = useState(false);
-  // Subscribe this component to the render-loop, rotate the mesh every frame
-  useFrame((state, delta) => (ref.current.rotation.x += delta));
-  // Return the view, these are regular Threejs elements expressed in JSX
-  return (
-    <mesh
-      {...props}
-      ref={ref}
-      scale={clicked ? 1.5 : 1}
-      onClick={() => click(!clicked)}
-      onPointerOver={(event) => (event.stopPropagation(), hover(true))}
-      onPointerOut={() => hover(false)}
-    >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-    </mesh>
-  );
-}
 
 export default function Demo() {
   return (
-    <>
-      <Canvas>
-        <Suspense fallback={null} />
-        <ambientLight intensity={Math.PI / 2} />
-        <spotLight
-          position={[10, 10, 10]}
-          angle={0.15}
-          penumbra={1}
-          decay={0}
-          intensity={Math.PI}
-        />
-        <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-        <Box position={[-1.2, 0, 0]} />
-        <Box position={[1.2, 0, 0]} />
+    <Canvas>
+      <Suspense fallback={null}>
+        <ambientLight intensity={0.5} />
         <spotLight
           position={[-10, -10, -10]}
           angle={0.15}
@@ -75,9 +65,8 @@ export default function Demo() {
         />
         <pointLight position={[10, 10, 10]} decay={0} intensity={Math.PI} />
         <Neutrogena />
-        <Pepsi />
         <OrbitControls />
-      </Canvas>
-    </>
+      </Suspense>
+    </Canvas>
   );
 }
