@@ -1,8 +1,8 @@
-import NeutrogenaComponent from './Lego';
 import './App.css';
+import Demo from './Demo';
 
 function App() {
-  return <NeutrogenaComponent />;
+  return <Demo />;
 }
 
 export default App;
